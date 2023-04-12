@@ -1,42 +1,200 @@
 <template>
-  
+  	
   <div id="app" style="text-align: left">
-    <el-table></el-table>
-	  <button @click='getToken'>获取Token</button>
-    <HelloWorld v-bind:msg="msg"/>	
+    <HelloWorld v-bind:msg="msg" style="text-align: center;"/>
+    <el-button type="text" @click="getToken">获取Token</el-button>
+    <el-container style="height: 500px; border: 1px solid #eee">
+      <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+        <el-menu :default-openeds="['1', '3']">
+          <el-submenu index="1">
+            <template slot="title"><i class="el-icon-message"></i>产品模块</template>
+            <el-menu-item-group>
+              <el-menu-item index="1-1">产品清单</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+          <el-submenu index="2">
+            <template slot="title"><i class="el-icon-menu"></i>订单模块</template>
+            <el-menu-item-group>
+              <el-menu-item index="2-1">订单列表</el-menu-item>
+              <el-menu-item index="2-2">订单支付</el-menu-item>
+              <el-menu-item index="2-3">订单取消</el-menu-item>
+            </el-menu-item-group>
+
+          </el-submenu>
+          <el-submenu index="3">
+            <template slot="title"><i class="el-icon-setting"></i>导航三</template>
+            <el-menu-item-group>
+              <template slot="title">分组一</template>
+              <el-menu-item index="3-1">选项1</el-menu-item>
+              <el-menu-item index="3-2">选项2</el-menu-item>
+            </el-menu-item-group>
+            <el-menu-item-group title="分组2">
+              <el-menu-item index="3-3">选项3</el-menu-item>
+            </el-menu-item-group>
+            <el-submenu index="3-4">
+              <template slot="title">选项4</template>
+              <el-menu-item index="3-4-1">选项4-1</el-menu-item>
+            </el-submenu>
+          </el-submenu>
+        </el-menu>
+      </el-aside>
+
+      <el-container>
+        <el-header style="text-align: right; font-size: 12px">
+          <el-dropdown>
+            <i class="el-icon-setting" style="margin-right: 15px"></i>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>查看</el-dropdown-item>
+              <el-dropdown-item>新增</el-dropdown-item>
+              <el-dropdown-item>删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <span>王小虎</span>
+        </el-header>
+        
+        <el-main>
+          <el-button type="text" @click="showAddProduct">新增</el-button>
+          <el-table :data="ProductInfo" style="width: 100%">
+            <el-table-column type="index" width="50"></el-table-column>
+            <el-table-column prop="productName" label="产品名称"></el-table-column>
+            <el-table-column prop="productPrice" label="产品价格"></el-table-column>
+            <el-table-column prop="productAmount" label="产品数量"></el-table-column>
+            <el-table-column fixed="right" label="操作" width="100">
+              <template slot-scope="scope">
+                <el-button type="text" @click="showEditProduct(scope.$index)">编辑</el-button>
+                <el-button type="text" @click="deleteProduct(scope.$index)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-main>
+      </el-container>
+    </el-container>
+    <AddProduct :dialogVisible="addProductDialogVisible" :selectedItem="selectedItem" @save="addProduct" @cancel="cancel"></AddProduct>
+    <EditProduct :dialogVisible="editProductDialogVisible" :selectedItem="selectedItem" @save="editProduct" @cancel="cancel"></EditProduct>
   </div>
 </template>
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
+import AddProduct from './components/AddProduct.vue'
+import EditProduct from './components/EditProduct.vue'
 import qs from 'qs'
 import axios from 'axios'
 
+const loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
+
 export default {
   data() {
-    return { msg : "欢迎来到我的Vue Demo App!!!"}
+    return { 
+      msg : "Microservice Demo App",
+      selectedIndex: -1,
+      selectedItem: {},
+      addProductDialogVisible: false,
+      editProductDialogVisible: false,
+      ProductInfo: []
+    }
   },
   name: 'App',
   components: {
-    HelloWorld
+    HelloWorld,
+    AddProduct,
+    EditProduct
+  },
+  created: function(){
+    this.setProductInfo();
+  },
+  watch: {
+    msg: function(newValue,oldValue){
+      alert("新值:"+newValue+",旧值:"+oldValue);
+    }
   },
   mounted () {
-    axios
-      .get('/api/users/checkstatus',{
-		headers: {
-			'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsib3JkZXJzIiwidXNlcnMiXSwidXNlcl9uYW1lIjoi5byg5LiJIiwic2NvcGUiOlsiYWxsIl0sImV4cCI6MTY4MDg2Mzk3OCwidXNlcmlkIjoxLCJhdXRob3JpdGllcyI6WyJwcm9kdWN0cy5kZWR1Y2UiLCJvcmRlcnMucXVlcnkiLCJzZWN1cml0eV9wMSIsInNlY3VyaXR5X3AyIiwib3JkZXJzLmNhbmNlbCIsInJvb3QiLCJvcmRlcnMuY3JlYXRlIiwiUk9MRV9BZG1pbiIsInVzZXJzLnBvc3RtZXNzYWdlIiwidXNlcnMiLCJwcm9kdWN0cyJdLCJqdGkiOiJlNjMxNzA3YS1mMDNhLTRiYmItODg3Ny00MmQ4NjllMjZhYjEiLCJjbGllbnRfaWQiOiJjbGllbnRJZCJ9.auFfVdjpgIU36wZD2kYZEwKc7YGooJ23Ft3IBqhpGis'
-		}
-	  })
-      .then(response => (this.msg = response.data)
-	  
-	  )
-      .catch(function (error) { // 请求失败处理
-        console.log(error);
-    });
 
-    
   },
   methods: {
+    deleteProduct(index){
+      const url = `/api/products/${this.ProductInfo[index].productId}`;
+      axios({
+        url: url,
+        method: 'DELETE',
+				headers: { 
+          'Authorization': loginToken
+        },
+        timeout: 6000
+			})
+			.then((response) => {
+        console.log(response.data);
+        this.setProductInfo();
+      })
+			.catch(function (error) { // 请求失败处理
+				console.log(error);
+			});
+      this.selectedIndex = -1;
+      this.selectedItem={};
+    },
+    showAddProduct(){
+      this.addProductDialogVisible = true;
+    },
+    showEditProduct(index){
+      this.selectedIndex = index;
+      this.selectedItem = JSON.parse(JSON.stringify(this.ProductInfo[index]));
+      this.editProductDialogVisible = true;
+    },
+    addProduct(product){
+      axios({
+        url: '/api/products',
+        method: 'POST',
+			  data: product,
+				headers: { 
+          'Authorization': loginToken
+        },
+        timeout: 6000
+			})
+			.then((response) => {
+        console.log(response.data);
+        this.setProductInfo();
+      })
+			.catch(function (error) { // 请求失败处理
+				console.log(error);
+			});
+      this.addProductDialogVisible=false;
+      this.selectedItem={};
+    },
+    editProduct(product){
+      axios({
+        url: '/api/products',
+        method: 'PUT',
+			  data: product,
+				headers: { 
+          'Authorization': loginToken
+        },
+        timeout: 6000
+			})
+			.then((response) => {
+        console.log(response.data);
+        this.setProductInfo();
+      })
+			.catch(function (error) { // 请求失败处理
+				console.log(error);
+			});
+      this.editProductDialogVisible=false;
+      this.selectedItem={};
+      this.selectedIndex = -1;
+    },
+    setProductInfo(){
+      axios
+          .get('/api/products',{
+        headers: {
+          'Authorization': loginToken
+        }
+        })
+          .then(response => (this.ProductInfo = response.data.data)
+        
+        )
+          .catch(function (error) { // 请求失败处理
+            console.log(error);
+        });
+    },
 	  getToken() {
 
 			axios({
@@ -52,11 +210,14 @@ export default {
 				headers: { 
           'Accept': '*/*',
           'Content-Type': 'application/x-www-form-urlencoded'
-          //'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsib3JkZXJzIiwidXNlcnMiXSwidXNlcl9uYW1lIjoi5byg5LiJIiwic2NvcGUiOlsiYWxsIl0sImV4cCI6MTY4MDg0MjQwNSwidXNlcmlkIjoxLCJhdXRob3JpdGllcyI6WyJwcm9kdWN0cy5kZWR1Y2UiLCJvcmRlcnMucXVlcnkiLCJzZWN1cml0eV9wMSIsInNlY3VyaXR5X3AyIiwib3JkZXJzLmNhbmNlbCIsIm9yZGVycy5jcmVhdGUiLCJST0xFX0FkbWluIiwidXNlcnMucG9zdG1lc3NhZ2UiLCJ1c2VycyIsInByb2R1Y3RzIl0sImp0aSI6ImU1NTQyNmEyLTFhNDUtNGZhZS1hMmJhLTMwYjIyZTEzNTFmMSIsImNsaWVudF9pZCI6ImNsaWVudElkIn0.AzsqdVaE1tnqztVsM2D87scRLY1wuw1s3qFpxyQ8NSY'
         },
         timeout: 6000
 			})
-			.then(response => (this.msg = response))
+			.then((response) => {
+        localStorage.setItem("microserviceDemoLoginToken",response.data.data.access_token);
+        this.msg = response.data.data.access_token;
+
+      })
 			.catch(function (error) { // 请求失败处理
 				console.log(error);
 			});
@@ -70,7 +231,12 @@ export default {
       });
 
 
-	  }
+	  },
+    cancel(){
+      this.addProductDialogVisible = false;
+      this.editProductDialogVisible = false;
+      this.selectedItem={};
+    }
   }
 }
 </script>
