@@ -27,7 +27,9 @@ pipeline {
         }
 
         stage("Install modules and Build project"){
-
+            tools{
+                nodejs 'nodejs18'
+            }
             steps{
                 //安装更新modules
                 sh "npm install"
