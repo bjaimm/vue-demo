@@ -24,6 +24,18 @@ pipeline {
                     sh "mkdir -p target/classes"
                 }*/
             }
-        }        
+        }
+
+        stage("Install modules and Build project"){
+
+            steps{
+                //安装更新modules
+                sh "npm install"
+                //编译工程，生成到dist目录
+                sh "npm run build"
+            }
+        }
+        
+
      }
 }
