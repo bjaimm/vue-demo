@@ -1,6 +1,9 @@
 //设置镜像版本
 tag ="latest"
 
+//获取用户选择部署的服务器节点
+SelectedNodes="${PublishServer}".split(",")
+
 //如果是本地私有镜像仓库，如Harbor，需要设置repositoryUrl和projectName
 //如果是dockerhub,则不需要设置repository
 repositoryUrl="9.197.4.240:85"
@@ -42,7 +45,11 @@ pipeline {
 
             steps{
                 script{
-                    sshPublisher(publishers: [sshPublisherDesc(configName: "publish_master_server", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/usr/share/nginx/html', remoteDirectorySDF: false, removePrefix: 'dist', sourceFiles: 'dist/**')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                    for (j = 0; j < SelectedNodes.length; j++) {
+                        CurrentNodeName = SelectedNodes[j].split("@")[0]
+                        CurrentNodeIP = SelectedNodes[j].split("@")[1]
+                        sshPublisher(publishers: [sshPublisherDesc(configName: "${CurrentNodeName}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "", execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/usr/share/nginx/html', remoteDirectorySDF: false, removePrefix: 'dist', sourceFiles: 'dist/**')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
+                    }
                 }
             }
         }
