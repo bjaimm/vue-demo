@@ -81,7 +81,7 @@ import EditProduct from './components/EditProduct.vue'
 import qs from 'qs'
 import axios from 'axios'
 
-const loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
+var loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
 
 export default {
   data() {
