@@ -184,7 +184,7 @@ export default {
     setProductInfo(){
       if(localStorage.getItem("microserviceDemoLoginToken")===null){
         this.getToken();
-        //loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
+        loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
       }
       axios
           .get('/api/products',{
