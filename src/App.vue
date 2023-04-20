@@ -105,7 +105,10 @@ export default {
   },
   watch: {
     msg: function(newValue,oldValue){
-      alert("新值:"+newValue+",旧值:"+oldValue);
+      if(newValue != oldValue && localStorage.getItem("microserviceDemoLoginToken")!=null){
+        loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken");
+        this.setProductInfo();
+      }
     }
   },
   mounted () {
@@ -184,7 +187,6 @@ export default {
     setProductInfo(){
       if(localStorage.getItem("microserviceDemoLoginToken")===null){
         this.getToken();
-        loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
       }
       axios
           .get('/api/products',{
