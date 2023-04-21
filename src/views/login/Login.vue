@@ -43,8 +43,15 @@ export default {
         "loginForm.username": function(newValue,oldValue){
                 if(newValue!=oldValue || newValue!=oldValue){
                     this.tips = ""
+                    this.showTips=false
                 }
-            }        
+            } ,
+        "loginForm.password": function(newValue,oldValue){
+                if(newValue!=oldValue || newValue!=oldValue){
+                    this.tips = ""
+                    this.showTips=false
+                }
+            }       
     },
     methods:{
         login(){

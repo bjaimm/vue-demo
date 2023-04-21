@@ -192,6 +192,7 @@
           })
         }
         else{
+          loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
           axios
               .get('/api/products',{
             headers: {
