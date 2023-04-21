@@ -39,6 +39,13 @@ export default {
             showTips: false
         };
     },
+    watch: {
+        "loginForm.username": function(newValue,oldValue){
+                if(newValue!=oldValue || newValue!=oldValue){
+                    this.tips = ""
+                }
+            }        
+    },
     methods:{
         login(){
 
@@ -61,7 +68,7 @@ export default {
             .then((response) => {
                 //校验response中的响应结果
 
-                if(1===1){
+                if(response.data.code===200 && response.data.success===true){
                     //获取到Token数据，登录成功，跳转至首页
                     localStorage.setItem("microserviceDemoLoginToken",response.data.data.access_token);
 
@@ -73,7 +80,7 @@ export default {
                 }
                 else{
                     this.showTips=true
-                    this.tips="用户名密码不匹配，登录失败"
+                    this.tips="登录失败，原因："+response.data.message+"("+response.data.data+")"
                 }
             })
             .catch(function (error) { // 请求失败处理
