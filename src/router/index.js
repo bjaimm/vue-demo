@@ -9,7 +9,10 @@ Vue.use(VueRouter)
 
 //创建路由配置关系对象，关联路由和组件
 const routes =[
-
+    {
+        path: "/",
+        component: Home
+    },
     {
         path: "/login",
         name: "Login",
