@@ -170,7 +170,7 @@ export default {
   margin-bottom: 20px;
   border: none;
   padding: 10px;
-  border-bottom: 2px solid rgb(128, 125, 125);
+  border-bottom: 2px solid rgb(247, 230, 4);
   font-size: 15px;
   outline: none;
 }

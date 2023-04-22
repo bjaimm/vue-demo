@@ -55,7 +55,7 @@ import LeftMenu from "../../components/LeftMenu.vue"
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
-    color: #212221d5;
+    color: #e7e7e4e5;
     margin-top: 0px;
     background-image: linear-gradient(to right, #1c1c1dd7, #a6c1ee);
   }
