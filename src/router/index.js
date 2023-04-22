@@ -3,6 +3,7 @@ import Login from "../views/login/Login.vue"
 import Home from "../views/home/Home.vue"
 import Vue from 'vue'
 import NotFound from "../components/NotFound.vue"
+import ProductList from "../views/product/ProductList.vue"
 
 Vue.use(VueRouter)
 
@@ -11,12 +12,21 @@ const routes =[
 
     {
         path: "/login",
+        name: "Login",
         component: Login
 
     },
     {
         path: "/home",
-        component: Home
+        name: "Home",
+        component: Home,
+        children: [
+            {
+                path: "product/productList",
+                name: "ProductList",
+                component: ProductList
+            }
+        ]
     },
     {
         path: "/:paths(.*)*",

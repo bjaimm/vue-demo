@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    <h3>{{ msg }}</h3>
    
   </div>
 </template>
@@ -18,6 +18,10 @@ export default {
 <style scoped>
 h3 {
   margin: 40px 0 0;
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+
 }
 ul {
   list-style-type: none;
