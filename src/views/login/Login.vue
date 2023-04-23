@@ -83,7 +83,7 @@ export default {
                     this.showTips=false
                     this.tips=""
                     this.$router.push({
-                        path: '/home'
+                        path: '/home/product/productList'
                     })
                 }
                 else{

@@ -4,7 +4,7 @@
 
         <el-menu router :default-active="$router.path" :default-openeds="['1', '3']">
         <el-submenu index="1">
-            <template slot="title"><i class="el-icon-message"></i>产品模块</template>
+            <template slot="title"><i class="el-icon-menu"></i>产品模块</template>
             <el-menu-item-group>
             <el-menu-item index="/home/product/productList">产品清单</el-menu-item>
             </el-menu-item-group>
@@ -19,19 +19,10 @@
 
         </el-submenu>
         <el-submenu index="3">
-            <template slot="title"><i class="el-icon-setting"></i>导航三</template>
+            <template slot="title"><i class="el-icon-menu"></i>用户模块</template>
             <el-menu-item-group>
-            <template slot="title">分组一</template>
-            <el-menu-item index="3-1">选项1</el-menu-item>
-            <el-menu-item index="3-2">选项2</el-menu-item>
+            <el-menu-item index="3-1">用户列表</el-menu-item>
             </el-menu-item-group>
-            <el-menu-item-group title="分组2">
-            <el-menu-item index="3-3">选项3</el-menu-item>
-            </el-menu-item-group>
-            <el-submenu index="3-4">
-            <template slot="title">选项4</template>
-            <el-menu-item index="3-4-1">选项4-1</el-menu-item>
-            </el-submenu>
         </el-submenu>
         </el-menu>
  
