@@ -10,7 +10,7 @@
         <el-container>
 
           <el-header class="header">
-            <TopBar   v-bind:msg="msg" class="header"/>
+            <TopBar   v-bind:msg="msg" v-bind:loginUserName="loginUserName" class="header"/>
           </el-header>
           
           <el-main>
@@ -27,18 +27,24 @@
 
 import TopBar from "../../components/TopBar.vue"
 import LeftMenu from "../../components/LeftMenu.vue"
- 
+
+var loginUserName = localStorage.getItem("microserviceDemoLoginUserName")
+
   export default {
     data() {
       return { 
-        msg : "微服务Demo后台管理程序"
+        msg : "微服务Demo后台管理程序",
+        loginUserName: loginUserName
       }
     },
     name: 'Home',
     components: {
       TopBar,
       LeftMenu
-    }
+    },
+    created: function(){
+          this.loginUserName = localStorage.getItem("microserviceDemoLoginUserName");
+        }
     
   }
   </script>

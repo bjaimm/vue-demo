@@ -4,21 +4,56 @@
     <el-dropdown >
       <i class="el-icon-setting" ></i>
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item>查看</el-dropdown-item>
-        <el-dropdown-item>新增</el-dropdown-item>
-        <el-dropdown-item>删除</el-dropdown-item>
+        <el-dropdown-item @click.native="checkLoginUserInfo">用户信息</el-dropdown-item>
+        <el-dropdown-item @click.native="logout">退出</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
-    <span style="color: rgb(247, 230, 4)">王小虎</span>
+    <span style="color: rgb(231, 161, 9)">{{ loginUserName }}</span>
+    <CheckLoginUserInfo :dialogVisible="checkLoginUserInfoDialogVisible" :token="token" :loginUserId="loginUserId" :loginUserName="loginUserName" @ok="ok"></CheckLoginUserInfo>
   </div>
 </template>
 
 <script>
+import CheckLoginUserInfo from "./CheckLoginUserInfo.vue"
+
 export default {
   name: 'HelloWorld',
+  data(){
+      return {
+        checkLoginUserInfoDialogVisible: false,
+        token: "",
+        loginUserId: null,
+        loginUserName: ""
+      }
+  },
   props: {
-    msg: String
-  }  
+    msg: String,
+    loginUserName: String
+  },
+  components:{
+    CheckLoginUserInfo
+  },
+  methods:{
+    checkLoginUserInfo(){
+      console.log("checkLoginUserInfo...")
+      this.checkLoginUserInfoDialogVisible=true;
+      this.token = localStorage.getItem("microserviceDemoLoginToken")
+      this.loginUserId = localStorage.getItem("microserviceDemoLoginUserId")
+      this.tloginUserNameken = localStorage.getItem("microserviceDemoLoginUserName")
+    },
+    ok(){
+      this.checkLoginUserInfoDialogVisible=false;
+    },
+    logout(){
+      this.checkLoginUserInfoDialogVisible=false;
+      localStorage.setItem("microserviceDemoLoginToken",null)
+      localStorage.setItem("microserviceDemoLoginUserId",null)
+      localStorage.setItem("microserviceDemoLoginUserName",null)
+      this.$router.push({
+        path: "/login"
+      })
+    }
+  } 
 }
 </script>
 

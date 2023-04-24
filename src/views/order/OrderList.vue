@@ -8,10 +8,18 @@
         </el-breadcrumb>
         <el-form :inline="true" class="demo-form-inline">
             <el-form-item label="订单状态">
-                <el-input v-model="orderStatus" placeholder="订单状态"></el-input>
+                
+                <el-select v-model="orderStatus" clearable placeholder="请选择">
+                  <el-option
+                    v-for="item in orderStatusOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                  </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="setOrderInfo">查询</el-button>
+                <el-button type="primary" icon="el-icon-search" @click="setOrderInfo">查询</el-button>
                 <el-button type="primary" @click="showAddOrder">新增</el-button>
             </el-form-item>
         </el-form>
@@ -26,10 +34,9 @@
             <el-table-column prop="updateDateTime" label="更新时间" width="180"></el-table-column>
             <el-table-column fixed="right" label="操作" width="380">
             <template slot-scope="scope">
-                <el-button round @click="showEditOrder(scope.$index)">明细</el-button>
-                <el-button round @click="showEditOrder(scope.$index)">取消</el-button>
-                <el-button round @click="showEditOrder(scope.$index)">支付</el-button>
-                <el-button round @click="deleteOrder(scope.$index)">删除</el-button>
+                <el-button type="info"  icon="el-icon-message" round @click="showOrderDetail(scope.$index)">明细</el-button>
+                <el-button type="danger" :disabled="OrderInfo[scope.$index].orderStatus == 2 || OrderInfo[scope.$index].orderStatus == 3" icon="el-icon-delete" round @click="showCancelOrder(scope.$index)">取消</el-button>
+                <el-button type="success" icon="el-icon-check" round @click="showPayOrder(scope.$index)">支付</el-button>
             </template>
             </el-table-column>
         </el-table>
@@ -39,17 +46,22 @@
             </el-pagination>
         </div>
         <AddOrder :dialogVisible="addOrderDialogVisible" :selectedItem="selectedItem" @save="addOrder" @cancel="cancel"></AddOrder>
-        <EditOrder :dialogVisible="editOrderDialogVisible" :selectedItem="selectedItem" @save="editOrder" @cancel="cancel"></EditOrder>
+        <ShowOrderDetail :dialogVisible="orderDetailDialogVisible" :selectedItem="selectedItem" @cancel="cancel"></ShowOrderDetail>
+        <CancelOrder :dialogVisible="cancelOrderDialogVisible" :selectedItem="selectedItem" @save="cancelOrder" @cancel="cancel"></CancelOrder>
+        <PayOrder :dialogVisible="payOrderDialogVisible" :selectedItem="selectedItem" @save="payOrder" @cancel="cancel"></PayOrder>
     </div>
     </template>
     
     <script>
       import AddOrder from '../../components/order/AddOrder.vue'
-      import EditOrder from '../../components/order/EditOrder.vue'
+      import ShowOrderDetail from '../../components/order/ShowOrderDetail.vue'
+      import CancelOrder from '../../components/order/CancelOrder.vue'
+      import PayOrder from '../../components/order/PayOrder.vue'
       import qs from 'qs'
       import axios from 'axios'
     
       var loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
+      var loginUserId = localStorage.getItem("microserviceDemoLoginUserId")
     
     export default{
         name: "OrderList",
@@ -58,9 +70,24 @@
                 selectedIndex: -1,
                 selectedItem: {},
                 addOrderDialogVisible: false,
-                editOrderDialogVisible: false,
+                orderDetailDialogVisible: false,
+                cancelOrderDialogVisible: false,
+                payOrderDialogVisible: false,
                 OrderInfo: [],
-                orderStatus: 1,
+                orderStatusOptions: [{
+                    value: 0,
+                    label: '已建单'
+                  }, {
+                    value: 1,
+                    label: '库存已扣减'
+                  }, {
+                    value: 2,
+                    label: '已支付'
+                  }, {
+                    value: 3,
+                    label: '已取消'
+                  }],
+                orderStatus: 0,
                 total: 0,
                 rows: 10,
                 page: 1
@@ -68,7 +95,9 @@
         },
         components: {
           AddOrder,
-          EditOrder
+          ShowOrderDetail,
+          CancelOrder,
+          PayOrder
         },
         created: function(){
           this.setOrderInfo();
@@ -80,40 +109,42 @@
       
         },
         methods: {
-          deleteOrder(index){
-            const url = `/api/Orders/${this.OrderInfo[index].OrderId}`;
-            axios({
-              url: url,
-              method: 'DELETE',
-                      headers: { 
-                'Authorization': loginToken
-              },
-              timeout: 6000
-                  })
-                  .then((response) => {
-              console.log(response.data);
-              this.setOrderInfo();
-            })
-                  .catch(function (error) { // 请求失败处理
-                      console.log(error);
-                  });
-            this.selectedIndex = -1;
-            this.selectedItem={};
-          },
           showAddOrder(){
             this.addOrderDialogVisible = true;
+            this.cancelOrderDialogVisible =false;
+            this.orderDetailDialogVisible = false;
+            this.payOrderDialogVisible = false;
           },
-          showEditOrder(index){
+          showOrderDetail(index){
             this.selectedIndex = index;
             this.selectedItem = JSON.parse(JSON.stringify(this.OrderInfo[index]));
-            this.editOrderDialogVisible = true;
+            this.orderDetailDialogVisible = true;
+            this.addOrderDialogVisible = false;
+            this.cancelOrderDialogVisible =false;
+            this.payOrderDialogVisible = false;
+          },
+          showCancelOrder(index){
+            this.selectedIndex = index;
+            this.selectedItem = JSON.parse(JSON.stringify(this.OrderInfo[index]));
+            this.cancelOrderDialogVisible = true;
+            this.addOrderDialogVisible = false;
+            this.orderDetailDialogVisible = false;
+            this.payOrderDialogVisible = false;
+          },
+          showPayOrder(index){
+            this.selectedIndex = index;
+            this.selectedItem = JSON.parse(JSON.stringify(this.OrderInfo[index]));
+            this.cancelOrderDialogVisible = false;
+            this.addOrderDialogVisible = false;
+            this.orderDetailDialogVisible = false;
+            this.payOrderDialogVisible = true;
           },
           addOrder(Order){
             axios({
               url: '/api/Orders',
               method: 'POST',
-                    data: Order,
-                      headers: { 
+              data: Order,
+              headers: { 
                 'Authorization': loginToken
               },
               timeout: 6000
@@ -126,28 +157,82 @@
                       console.log(error);
                   });
             this.addOrderDialogVisible=false;
+            this.cancelOrderDialogVisible =false;
+            this.orderDetailDialogVisible = false;
+            this.payOrderDialogVisible = false;
             this.selectedItem={};
           },
-          editOrder(Order){
-            axios({
-              url: '/api/Orders',
-              method: 'PUT',
-                    data: Order,
-                      headers: { 
-                'Authorization': loginToken
-              },
-              timeout: 6000
-                  })
-                  .then((response) => {
-              console.log(response.data);
-              this.setOrderInfo();
-            })
-                  .catch(function (error) { // 请求失败处理
-                      console.log(error);
-                  });
-            this.editOrderDialogVisible=false;
-            this.selectedItem={};
-            this.selectedIndex = -1;
+          cancelOrder(Order){
+            if(localStorage.getItem("microserviceDemoLoginToken")===null){
+    
+              this.$router.push({
+                path: '/login'
+              })
+            }
+            else{
+              loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
+              loginUserId = localStorage.getItem("microserviceDemoLoginUserId")
+              
+              var cancelOrderUrl="/api/orders/cancel/"+loginUserId+"/"+this.selectedItem.orderHeaderId
+              axios({
+                url: cancelOrderUrl,
+                method: 'PUT',
+                //data: Order,
+                headers: { 
+                  'Authorization': loginToken
+                },
+                timeout: 6000
+                    })
+                    .then((response) => {
+                console.log(response.data);
+                this.setOrderInfo();
+              })
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+              this.cancelOrderDialogVisible=false;
+              this.addOrderDialogVisible = false;
+              this.orderDetailDialogVisible = false;
+              this.payOrderDialogVisible = false;
+              this.selectedItem={};
+              this.selectedIndex = -1;
+            }
+          },
+          payOrder(Order){
+            if(localStorage.getItem("microserviceDemoLoginToken")===null){
+    
+              this.$router.push({
+                path: '/login'
+              })
+            }
+            else{
+              loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
+              loginUserId = localStorage.getItem("microserviceDemoLoginUserId")
+              
+              var payOrderUrl="/api/orders/pay/"+loginUserId+"/"+this.selectedItem.orderHeaderId
+              axios({
+                url: payOrderUrl,
+                method: 'GET',
+                //data: Order,
+                headers: { 
+                  'Authorization': loginToken
+                },
+                timeout: 6000
+                    })
+                    .then((response) => {
+                console.log(response.data);
+                this.setOrderInfo();
+              })
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+              this.cancelOrderDialogVisible=false;
+              this.addOrderDialogVisible = false;
+              this.orderDetailDialogVisible = false;
+              this.payOrderDialogVisible = false;
+              this.selectedItem={};
+              this.selectedIndex = -1;
+            }
           },
           setOrderInfo(){
             if(localStorage.getItem("microserviceDemoLoginToken")===null){
@@ -163,11 +248,20 @@
                   .get(queryUrl,{
                 headers: {
                   'Authorization': loginToken
+                },
+                params: {
+                  orderStatus: this.orderStatus
                 }
                 })
                   .then(response => {
-                    this.OrderInfo = response.data.data.records
-                    this.total = response.data.data.total
+                    if(response.data.data!=null){
+                      this.OrderInfo = response.data.data.records
+                      this.total = response.data.data.total
+                    }
+                    else{
+                      this.OrderInfo=[]
+                      this.total = 0
+                    }
                   }
                 
                 )
@@ -189,7 +283,9 @@
           },
           cancel(){
             this.addOrderDialogVisible = false;
-            this.editOrderDialogVisible = false;
+            this.orderDetailDialogVisible = false;
+            this.cancelOrderDialogVisible =false;
+            this.payOrderDialogVisible = false;
             this.selectedItem={};
           }
         }

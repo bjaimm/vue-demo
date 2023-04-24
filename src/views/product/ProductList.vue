@@ -7,7 +7,7 @@
     </el-breadcrumb>
     <el-form :inline="true" class="demo-form-inline">
         <el-form-item label="产品名称">
-            <el-input placeholder="产品名称"></el-input>
+            <el-input v-model="queryProductName" placeholder="产品名称"></el-input>
         </el-form-item>
         <el-form-item>
             <el-button type="primary" >查询</el-button>
@@ -49,7 +49,8 @@ export default{
             selectedItem: {},
             addProductDialogVisible: false,
             editProductDialogVisible: false,
-            ProductInfo: []
+            ProductInfo: [],
+            queryProductName: ""
         }
     },
     components: {

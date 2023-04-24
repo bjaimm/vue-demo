@@ -79,11 +79,16 @@ export default {
                 if(response.data.code===200 && response.data.success===true){
                     //获取到Token数据，登录成功，跳转至首页
                     localStorage.setItem("microserviceDemoLoginToken",response.data.data.access_token);
+                    localStorage.setItem("microserviceDemoLoginUserId",response.data.data.userid);
+                    localStorage.setItem("microserviceDemoLoginUserName",response.data.data.username);
 
                     this.showTips=false
                     this.tips=""
                     this.$router.push({
-                        path: '/home/product/productList'
+                        path: '/home',
+                        params: {
+                          loginUserName: response.data.data.username
+                        }
                     })
                 }
                 else{
@@ -170,7 +175,7 @@ export default {
   margin-bottom: 20px;
   border: none;
   padding: 10px;
-  border-bottom: 2px solid rgb(247, 230, 4);
+  border-bottom: 2px solid rgb(231, 161, 9);
   font-size: 15px;
   outline: none;
 }

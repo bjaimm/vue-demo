@@ -4,22 +4,20 @@
 
         <el-menu router :default-active="$router.path" :default-openeds="['1', '3']">
         <el-submenu index="1">
-            <template slot="title"><i class="el-icon-menu"></i>产品模块</template>
+            <template slot="title"><i class="el-icon-menu"></i>产品管理</template>
             <el-menu-item-group>
-            <el-menu-item index="/home/product/productList">产品列表</el-menu-item>
+                <el-menu-item index="/home/product/productList">产品列表</el-menu-item>
             </el-menu-item-group>
         </el-submenu>
         <el-submenu index="2">
-            <template slot="title"><i class="el-icon-menu"></i>订单模块</template>
+            <template slot="title"><i class="el-icon-menu"></i>订单管理</template>
             <el-menu-item-group>
-            <el-menu-item index="/home/order/orderList">订单列表</el-menu-item>
-            <el-menu-item index="2-2">订单支付</el-menu-item>
-            <el-menu-item index="2-3">订单取消</el-menu-item>
+                <el-menu-item index="/home/order/orderList">订单列表</el-menu-item>
             </el-menu-item-group>
 
         </el-submenu>
         <el-submenu index="3">
-            <template slot="title"><i class="el-icon-menu"></i>用户模块</template>
+            <template slot="title"><i class="el-icon-menu"></i>用户管理</template>
             <el-menu-item-group>
             <el-menu-item index="3-1">用户列表</el-menu-item>
             </el-menu-item-group>
