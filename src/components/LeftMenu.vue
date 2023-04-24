@@ -6,13 +6,13 @@
         <el-submenu index="1">
             <template slot="title"><i class="el-icon-menu"></i>产品模块</template>
             <el-menu-item-group>
-            <el-menu-item index="/home/product/productList">产品清单</el-menu-item>
+            <el-menu-item index="/home/product/productList">产品列表</el-menu-item>
             </el-menu-item-group>
         </el-submenu>
         <el-submenu index="2">
             <template slot="title"><i class="el-icon-menu"></i>订单模块</template>
             <el-menu-item-group>
-            <el-menu-item index="2-1">订单列表</el-menu-item>
+            <el-menu-item index="/home/order/orderList">订单列表</el-menu-item>
             <el-menu-item index="2-2">订单支付</el-menu-item>
             <el-menu-item index="2-3">订单取消</el-menu-item>
             </el-menu-item-group>

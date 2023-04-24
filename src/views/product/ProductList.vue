@@ -1,16 +1,29 @@
 <template>
 <div id="productList" style="text-align: left">
-
-    <el-button type="text" @click="showAddProduct">新增</el-button>
+    <el-breadcrumb style="margin-top: 15px;" separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item :to="{path:'/home'}">首页</el-breadcrumb-item>
+        <el-breadcrumb-item >产品模块</el-breadcrumb-item>
+        <el-breadcrumb-item >产品列表</el-breadcrumb-item>
+    </el-breadcrumb>
+    <el-form :inline="true" class="demo-form-inline">
+        <el-form-item label="产品名称">
+            <el-input placeholder="产品名称"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" >查询</el-button>
+            <el-button type="primary" @click="showAddProduct">新增</el-button>
+        </el-form-item>
+    </el-form>
+    
     <el-table :data="ProductInfo" style="width: 100%">
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="productName" label="产品名称"></el-table-column>
         <el-table-column prop="productPrice" label="产品价格"></el-table-column>
         <el-table-column prop="productAmount" label="产品数量"></el-table-column>
-        <el-table-column fixed="right" label="操作" width="100">
+        <el-table-column fixed="right" label="操作" width="200">
         <template slot-scope="scope">
-            <el-button type="text" @click="showEditProduct(scope.$index)">编辑</el-button>
-            <el-button type="text" @click="deleteProduct(scope.$index)">删除</el-button>
+            <el-button round @click="showEditProduct(scope.$index)">编辑</el-button>
+            <el-button round @click="deleteProduct(scope.$index)">删除</el-button>
         </template>
         </el-table-column>
     </el-table>
@@ -21,8 +34,8 @@
 </template>
 
 <script>
-  import AddProduct from '../../components/AddProduct.vue'
-  import EditProduct from '../../components/EditProduct.vue'
+  import AddProduct from '../../components/product/AddProduct.vue'
+  import EditProduct from '../../components/product/EditProduct.vue'
   import qs from 'qs'
   import axios from 'axios'
 
