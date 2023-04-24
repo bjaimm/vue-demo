@@ -18,15 +18,15 @@
         
         <el-table :data="OrderInfo" style="width: 100%">
             <el-table-column type="index" width="50"></el-table-column>
-            <el-table-column prop="userId" label="订购人"></el-table-column>
+            <el-table-column prop="orderUserName" label="订购人"></el-table-column>
             <el-table-column prop="orderAmount" label="订单金额"></el-table-column>
-            <el-table-column prop="status" label="订单状态"></el-table-column>
-            <el-table-column prop="createTime" label="创建时间" width="180"></el-table-column>
-            <el-table-column prop="updateBy" label="最后更新人"></el-table-column>
-            <el-table-column prop="updateTime" label="更新时间" width="180"></el-table-column>
+            <el-table-column prop="orderStatusMessage" label="订单状态"></el-table-column>
+            <el-table-column prop="createDateTime" label="创建时间" width="180"></el-table-column>
+            <el-table-column prop="updateUserName" label="最后更新人"></el-table-column>
+            <el-table-column prop="updateDateTime" label="更新时间" width="180"></el-table-column>
             <el-table-column fixed="right" label="操作" width="380">
             <template slot-scope="scope">
-                <el-button round @click="showEditOrder(scope.$index)">查看</el-button>
+                <el-button round @click="showEditOrder(scope.$index)">明细</el-button>
                 <el-button round @click="showEditOrder(scope.$index)">取消</el-button>
                 <el-button round @click="showEditOrder(scope.$index)">支付</el-button>
                 <el-button round @click="deleteOrder(scope.$index)">删除</el-button>
@@ -158,7 +158,7 @@
             }
             else{
               loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
-              var queryUrl="/api/orders/listOrderHeaderPage/"+this.page+"/"+this.rows
+              var queryUrl="/api/orders/listOrderInfoPage2/"+this.page+"/"+this.rows
               axios
                   .get(queryUrl,{
                 headers: {
