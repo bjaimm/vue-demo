@@ -32,11 +32,11 @@
             <el-table-column prop="createDateTime" label="创建时间" width="180"></el-table-column>
             <el-table-column prop="updateUserName" label="最后更新人"></el-table-column>
             <el-table-column prop="updateDateTime" label="更新时间" width="180"></el-table-column>
-            <el-table-column fixed="right" label="操作" width="380">
+            <el-table-column fixed="right" label="操作" width="280">
             <template slot-scope="scope">
-                <el-button type="info"  icon="el-icon-message" round @click="showOrderDetail(scope.$index)">明细</el-button>
-                <el-button type="danger" :disabled="OrderInfo[scope.$index].orderStatus == 2 || OrderInfo[scope.$index].orderStatus == 3" icon="el-icon-delete" round @click="showCancelOrder(scope.$index)">取消</el-button>
-                <el-button type="success" icon="el-icon-check" round @click="showPayOrder(scope.$index)">支付</el-button>
+                <el-button size ="small" type="info"  icon="el-icon-message" round @click="showOrderDetail(scope.$index)">明细</el-button>
+                <el-button size ="small" type="danger" :disabled="OrderInfo[scope.$index].orderStatus == 2 || OrderInfo[scope.$index].orderStatus == 3" icon="el-icon-delete" round @click="showCancelOrder(scope.$index)">取消</el-button>
+                <el-button size ="small" type="success" :disabled="OrderInfo[scope.$index].orderStatus != 1" icon="el-icon-check" round @click="showPayOrder(scope.$index)">支付</el-button>
             </template>
             </el-table-column>
         </el-table>
