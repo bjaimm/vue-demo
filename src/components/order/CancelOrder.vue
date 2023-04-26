@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="待办事项-取消订单" :visible.sync="dialogVisible">
+  <el-dialog title="待办事项-取消订单" :visible="dialogVisible" :before-close="dialogClose">
     请确认是否取消以下订单：
     <el-table :data="selectedItem.orderDetailList" style="width: 100%">
         <el-table-column type="index" width="50"></el-table-column>
@@ -29,6 +29,10 @@ export default {
     },
     save(){
         this.$emit("save",this.selectedItem);
+    },
+    dialogClose(){
+      //this.$emit("update:orderDetailDialogVisible",false)
+      this.cancel();
     }
   }  
 }

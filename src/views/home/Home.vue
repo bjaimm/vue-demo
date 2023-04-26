@@ -3,7 +3,7 @@
     <div id="home" style="text-align: left">
       <el-container style="height: 100%; border: 1px solid #eee">
 
-        <el-aside width="200px" style="background-color: rgb(238, 241, 246)">
+        <el-aside width="200px" style="background-color: #545c64">
           <LeftMenu></LeftMenu>
         </el-aside>
   

@@ -50,4 +50,21 @@ const router = new VueRouter({
 }
 )
 
+//全局前置路由守卫
+router.beforeEach((to,from,next)=>{
+    if(to.path==="/login"){
+        next();
+    }
+    else{
+        const token = localStorage.getItem("microserviceDemoLoginToken");
+
+        if(token==="null"){
+            next("/login");
+        }
+        else{
+            next();
+        }
+    }
+})
+
 export default router

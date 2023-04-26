@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="待办事项-显示订单明细" :visible.sync="dialogVisible">
+  <el-dialog title="待办事项-显示订单明细" :visible="dialogVisible" :before-close="dialogClose">
     <el-table :data="selectedItem.orderDetailList" style="width: 100%">
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="productName" label="产品名称"></el-table-column>
@@ -24,6 +24,10 @@ export default {
 
     cancel(){
         this.$emit("cancel");
+    },
+    dialogClose(){
+      //this.$emit("update:orderDetailDialogVisible",false)
+      this.cancel();
     }
   }  
 }

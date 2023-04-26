@@ -82,6 +82,12 @@ export default {
                     localStorage.setItem("microserviceDemoLoginUserId",response.data.data.userid);
                     localStorage.setItem("microserviceDemoLoginUserName",response.data.data.username);
 
+                    this.$store.commit("setLoginInfo",{
+                      token: response.data.data.access_token,
+                      loginUserId: response.data.data.userid,
+                      loginUserName: response.data.data.username
+                    })
+
                     this.showTips=false
                     this.tips=""
                     this.$router.push({

@@ -2,7 +2,10 @@
   	
     <div id="leftMenu" style="text-align: left">
 
-        <el-menu router :default-active="$router.path" :default-openeds="['1', '3']">
+        <el-menu router :default-active="$router.path" :default-openeds="['1', '3']"
+            background-color="#545c64"
+            text-color="#fff"
+            active-text-color="#ffd04b">
         <el-submenu index="1">
             <template slot="title"><i class="el-icon-menu"></i>产品管理</template>
             <el-menu-item-group>

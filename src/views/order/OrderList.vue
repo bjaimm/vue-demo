@@ -45,10 +45,10 @@
 
             </el-pagination>
         </div>
-        <AddOrder :dialogVisible="addOrderDialogVisible" :selectedItem="selectedItem" @save="addOrder" @cancel="cancel"></AddOrder>
-        <ShowOrderDetail :dialogVisible="orderDetailDialogVisible" :selectedItem="selectedItem" @cancel="cancel"></ShowOrderDetail>
-        <CancelOrder :dialogVisible="cancelOrderDialogVisible" :selectedItem="selectedItem" @save="cancelOrder" @cancel="cancel"></CancelOrder>
-        <PayOrder :dialogVisible="payOrderDialogVisible" :selectedItem="selectedItem" @save="payOrder" @cancel="cancel"></PayOrder>
+        <AddOrder :dialogVisible.sync="addOrderDialogVisible" :selectedItem="selectedItem" @save="addOrder" @cancel="cancel"></AddOrder>
+        <ShowOrderDetail :dialogVisible.sync="orderDetailDialogVisible" :selectedItem="selectedItem" @cancel="cancel"></ShowOrderDetail>
+        <CancelOrder :dialogVisible.sync="cancelOrderDialogVisible" :selectedItem="selectedItem" @save="cancelOrder" @cancel="cancel"></CancelOrder>
+        <PayOrder :dialogVisible.sync="payOrderDialogVisible" :selectedItem="selectedItem" @save="payOrder" @cancel="cancel"></PayOrder>
     </div>
     </template>
     
@@ -163,40 +163,65 @@
             this.selectedItem={};
           },
           cancelOrder(Order){
-            if(localStorage.getItem("microserviceDemoLoginToken")===null){
+
+            this.$confirm('此操作将取消改订单, 是否继续?', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+
+              if(localStorage.getItem("microserviceDemoLoginToken")===null){
     
-              this.$router.push({
-                path: '/login'
-              })
-            }
-            else{
-              loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
-              loginUserId = localStorage.getItem("microserviceDemoLoginUserId")
-              
-              var cancelOrderUrl="/api/orders/cancel/"+loginUserId+"/"+this.selectedItem.orderHeaderId
-              axios({
-                url: cancelOrderUrl,
-                method: 'PUT',
-                //data: Order,
-                headers: { 
-                  'Authorization': loginToken
-                },
-                timeout: 6000
-                    })
-                    .then((response) => {
-                console.log(response.data);
-                this.setOrderInfo();
-              })
-                    .catch(function (error) { // 请求失败处理
-                        console.log(error);
-                    });
-              this.cancelOrderDialogVisible=false;
-              this.addOrderDialogVisible = false;
-              this.orderDetailDialogVisible = false;
-              this.payOrderDialogVisible = false;
-              this.selectedItem={};
-              this.selectedIndex = -1;
-            }
+                this.$router.push({
+                  path: '/login'
+                })
+              }
+              else{
+                loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
+                loginUserId = localStorage.getItem("microserviceDemoLoginUserId")
+                
+                var cancelOrderUrl="/api/orders/cancel/"+loginUserId+"/"+this.selectedItem.orderHeaderId
+                axios({
+                  url: cancelOrderUrl,
+                  method: 'PUT',
+                  //data: Order,
+                  headers: { 
+                    'Authorization': loginToken
+                  },
+                  timeout: 6000
+                      })
+                      .then((response) => {
+                  console.log(response.data);
+                  this.setOrderInfo();
+
+                  this.$message({
+                    type: 'success',
+                    message: '订单取消成功!'
+                  });
+
+                  this.cancelOrderDialogVisible=false;
+                  this.addOrderDialogVisible = false;
+                  this.orderDetailDialogVisible = false;
+                  this.payOrderDialogVisible = false;
+                  this.selectedItem={};
+                  this.selectedIndex = -1;
+                })
+                .catch(function (error) { // 请求失败处理
+                    console.log(error);
+                    this.$message({
+                      type: 'info',
+                      message: '取消订单失败:'+error
+                    }); 
+                });
+
+              }
+            }).catch(() => {
+              this.$message({
+                type: 'info',
+                message: '已撤回取消订单操作'
+              });          
+            });
+            
           },
           payOrder(Order){
             if(localStorage.getItem("microserviceDemoLoginToken")===null){

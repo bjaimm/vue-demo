@@ -37,9 +37,9 @@ export default {
     checkLoginUserInfo(){
       console.log("checkLoginUserInfo...")
       this.checkLoginUserInfoDialogVisible=true;
-      this.token = localStorage.getItem("microserviceDemoLoginToken")
-      this.loginUserId = localStorage.getItem("microserviceDemoLoginUserId")
-      this.tloginUserNameken = localStorage.getItem("microserviceDemoLoginUserName")
+      this.token = this.$store.state.token
+      this.loginUserId = this.$store.state.loginUserId
+      this.loginUserName = this.$store.state.loginUserName
     },
     ok(){
       this.checkLoginUserInfoDialogVisible=false;
@@ -52,6 +52,7 @@ export default {
       this.$router.push({
         path: "/login"
       })
+      window.location.reload();
     }
   } 
 }
