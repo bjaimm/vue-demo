@@ -1,5 +1,5 @@
 <template>
-  <div style="background-image: linear-gradient(to right, #1c1c1dd7, #a6c1ee)">
+  <div>
     <h3>{{ msg }}</h3>
     <el-dropdown >
       <i class="el-icon-setting" ></i>

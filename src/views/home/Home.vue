@@ -1,22 +1,23 @@
 <template>
   	
     <div id="home" style="text-align: left">
-      <el-container style="height: 100%; border: 1px solid #eee">
+      <el-container style="height: 100%; width: 100%;">
 
-        <el-aside width="200px" style="background-color: #545c64">
-          <LeftMenu></LeftMenu>
-        </el-aside>
-  
+        <el-header class="header" >
+            <TopBar   v-bind:msg="msg" v-bind:loginUserName="loginUserName" />
+        </el-header>
         <el-container>
-
-          <el-header class="header">
-            <TopBar   v-bind:msg="msg" v-bind:loginUserName="loginUserName" class="header"/>
-          </el-header>
-          
-          <el-main>
-            <router-view></router-view>
-          </el-main>
-          
+          <el-aside width="200px" style="background-color: #545c64">
+            <LeftMenu></LeftMenu>
+          </el-aside>
+    
+          <el-container style="">
+            
+            <el-main>
+              <router-view></router-view>
+            </el-main>
+            
+          </el-container>
         </el-container>
       </el-container>
 
@@ -56,6 +57,7 @@ var loginUserName = localStorage.getItem("microserviceDemoLoginUserName")
     -moz-osx-font-smoothing: grayscale;
     text-align: right;
     color: #e7e7e4e5;
+    background: linear-gradient(to right, #1c1c1dd7, #a6c1ee)
     
   }
   *{

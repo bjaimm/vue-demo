@@ -38,7 +38,5 @@ export default{
 </script>
 
 <style scoped>
-#leftMenu {
-    background-image: linear-gradient(to right, #fbc2eb, #a6c1ee);
-}
+
 </style>
