@@ -19,8 +19,8 @@
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" icon="el-icon-search" @click="setOrderInfo">查询</el-button>
-                <el-button type="primary" @click="showAddOrder">新增</el-button>
+                <el-button size ="small"  type="primary" icon="el-icon-search" @click="setOrderInfo">查询</el-button>
+                <el-button size ="small" type="primary" @click="showAddOrder">下单</el-button>
             </el-form-item>
         </el-form>
         
@@ -45,7 +45,7 @@
 
             </el-pagination>
         </div>
-        <AddOrder :dialogVisible.sync="addOrderDialogVisible" :selectedItem="selectedItem" @save="addOrder" @cancel="cancel"></AddOrder>
+        <AddOrder :dialogVisible.sync="addOrderDialogVisible"  @save="addOrder" @cancel="cancel"></AddOrder>
         <ShowOrderDetail :dialogVisible.sync="orderDetailDialogVisible" :selectedItem="selectedItem" @cancel="cancel"></ShowOrderDetail>
         <CancelOrder :dialogVisible.sync="cancelOrderDialogVisible" :selectedItem="selectedItem" @save="cancelOrder" @cancel="cancel"></CancelOrder>
         <PayOrder :dialogVisible.sync="payOrderDialogVisible" :selectedItem="selectedItem" @save="payOrder" @cancel="cancel"></PayOrder>
@@ -69,6 +69,7 @@
             return {
                 selectedIndex: -1,
                 selectedItem: {},
+                pickedProducts: this.$store.state.orderChart,
                 addOrderDialogVisible: false,
                 orderDetailDialogVisible: false,
                 cancelOrderDialogVisible: false,
@@ -139,11 +140,27 @@
             this.orderDetailDialogVisible = false;
             this.payOrderDialogVisible = true;
           },
-          addOrder(Order){
+          addOrder(Order,totalAmount){
+            let that = this;
+            var productList = [];
+            Order.forEach(item => {
+              productList.push({
+                "productId": item.productId,
+                "productQty": item.productQty
+              })
+            })
+            var placeOrder = {
+              "userId": this.$store.state.loginUserId,
+              "orderAmount": totalAmount,
+              "orderproducts": productList,
+              "createBy": this.$store.state.loginUserId,
+              "updateBy": this.$store.state.loginUserId
+            };
+
             axios({
-              url: '/api/Orders',
+              url: '/api/orders',
               method: 'POST',
-              data: Order,
+              data: placeOrder,
               headers: { 
                 'Authorization': loginToken
               },
@@ -151,16 +168,40 @@
                   })
                   .then((response) => {
               console.log(response.data);
-              this.setOrderInfo();
-            })
-                  .catch(function (error) { // 请求失败处理
-                      console.log(error);
+              if(response.data.code===200 && response.data.success===true){
+                
+
+                //清空购物车
+                this.$store.commit("clearOrderChart");
+
+                this.$message({
+                    type: 'success',
+                    message: '订单创建成功!'
                   });
-            this.addOrderDialogVisible=false;
-            this.cancelOrderDialogVisible =false;
-            this.orderDetailDialogVisible = false;
-            this.payOrderDialogVisible = false;
-            this.selectedItem={};
+                this.addOrderDialogVisible=false;
+                this.cancelOrderDialogVisible =false;
+                this.orderDetailDialogVisible = false;
+                this.payOrderDialogVisible = false;
+                this.selectedItem={};
+                this.setOrderInfo();
+
+              }
+              else{
+                this.$message({
+                      type: 'info',
+                      message: '创建订单失败:'+response.data.message+"("+response.data.data+")"
+                    });   
+              }
+              
+            })
+            .catch(function (error) { // 请求失败处理
+                console.log(error);
+                that.$message({
+                      type: 'info',
+                      message: '创建订单失败:'+error
+                    }); 
+            });
+            
           },
           cancelOrder(Order){
 

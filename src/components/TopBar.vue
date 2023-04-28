@@ -23,7 +23,8 @@ export default {
         checkLoginUserInfoDialogVisible: false,
         token: "",
         loginUserId: null,
-        loginUserName: ""
+        loginUserName: "",
+        orderChart: ""
       }
   },
   props: {
@@ -49,6 +50,7 @@ export default {
       localStorage.setItem("microserviceDemoLoginToken",null)
       localStorage.setItem("microserviceDemoLoginUserId",null)
       localStorage.setItem("microserviceDemoLoginUserName",null)
+      localStorage.setItem("microserviceDemoOrderChart",null)
       this.$router.push({
         path: "/login"
       })

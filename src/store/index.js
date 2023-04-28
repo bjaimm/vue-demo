@@ -5,14 +5,62 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
     state(){
+        var savedOrderChart = localStorage.getItem("microserviceDemoOrderChart")
+        if(savedOrderChart===null){
+            savedOrderChart =[]
+        }
+        else{
+            savedOrderChart = JSON.parse(savedOrderChart)
+        }
         return {
             token: localStorage.getItem("microserviceDemoLoginToken"),
             loginUserId: localStorage.getItem("microserviceDemoLoginUserId"),
-            loginUserName: localStorage.getItem("microserviceDemoLoginUserName")
+            loginUserName: localStorage.getItem("microserviceDemoLoginUserName"),
+            orderChart: savedOrderChart
         }
     },
     //mutations中的方法只能是同步
     mutations:{
+        clearOrderChart: function(state){
+            
+            //state.orderChart=null;
+            //state.orderChart=[];
+
+            for(let i=0;i<=state.orderChart.length;i++){
+                state.orderChart.splice(0,1);    
+            }
+
+            var tmp = state.orderChart;
+            state.orderChart = null;
+            state.orderChart = tmp;
+
+            localStorage.setItem("microserviceDemoOrderChart",JSON.stringify(state.orderChart))
+        },
+        pushOrderChart: function(state,pickedProduct){
+            if(state.orderChart===null){
+                state.orderChart=[];
+            }
+            state.orderChart.push(pickedProduct)
+
+            var tmp = state.orderChart;
+            state.orderChart = null;
+            state.orderChart = tmp;
+
+            localStorage.setItem("microserviceDemoOrderChart",JSON.stringify(state.orderChart))
+        },
+        popupOrderChart: function(state,removedProduct){
+
+            const i = state.orderChart.findIndex(item => item.productId === removedProduct.productId)
+            if(i !== -1){
+                state.orderChart.splice(i,1)
+            }
+
+            var tmp = state.orderChart;
+            state.orderChart = null;
+            state.orderChart = tmp;
+
+            localStorage.setItem("microserviceDemoOrderChart",JSON.stringify(state.orderChart))
+        },        
         setLoginInfo: function(state,data){
             state.token = data.token
             state.loginUserId = data.loginUserId

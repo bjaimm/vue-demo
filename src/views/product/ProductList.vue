@@ -10,8 +10,8 @@
             <el-input v-model="queryProductName" placeholder="产品名称"></el-input>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" >查询</el-button>
-            <el-button type="primary" @click="showAddProduct">新增</el-button>
+            <el-button size="small" type="primary" >查询</el-button>
+            <el-button  size="small" type="primary" @click="showAddProduct">新增</el-button>
         </el-form-item>
     </el-form>
     
@@ -22,8 +22,8 @@
         <el-table-column prop="productAmount" label="产品数量"></el-table-column>
         <el-table-column fixed="right" label="操作" width="200">
         <template slot-scope="scope">
-            <el-button round @click="showEditProduct(scope.$index)">编辑</el-button>
-            <el-button round @click="deleteProduct(scope.$index)">删除</el-button>
+            <el-button  size="small" round @click="showEditProduct(scope.$index)">编辑</el-button>
+            <el-button  size="small" round @click="deleteProduct(scope.$index)">删除</el-button>
         </template>
         </el-table-column>
     </el-table>
