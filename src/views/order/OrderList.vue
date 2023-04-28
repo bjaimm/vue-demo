@@ -24,8 +24,8 @@
             </el-form-item>
         </el-form>
         
-        <el-table :data="OrderInfo" style="width: 100%">
-            <el-table-column type="index" width="50"></el-table-column>
+        <el-table :data="OrderInfo" style="width: 100%" :row-class-name="rowClassName">
+            <el-table-column type="index" :index="indexByPages" width="50"></el-table-column>
             <el-table-column prop="orderUserName" label="订购人"></el-table-column>
             <el-table-column prop="orderAmount" label="订单金额"></el-table-column>
             <el-table-column prop="orderStatusMessage" label="订单状态"></el-table-column>
@@ -103,6 +103,11 @@
         created: function(){
           this.setOrderInfo();
         },
+        computed:{
+          indexByPages: function(){
+              return (this.page - 1)*(this.rows) + 1
+          }
+        },
         watch: {
           
         },
@@ -110,6 +115,9 @@
       
         },
         methods: {
+          rowClassName({row,rowIndex}){
+            row.id=rowIndex+1
+          },
           showAddOrder(){
             this.addOrderDialogVisible = true;
             this.cancelOrderDialogVisible =false;

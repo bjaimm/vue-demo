@@ -9,7 +9,7 @@
           </el-form-item>
       </el-form>
       <el-table :data="productSelectList" style="width: 100%">
-          <el-table-column type="index" width="50"></el-table-column>
+          <el-table-column type="index" :index="indexByPages" width="50"></el-table-column>
           <el-table-column prop="productName" label="产品名称"></el-table-column>
           <el-table-column prop="productAmount" label="库存数量"></el-table-column>
           <el-table-column prop="productPrice" label="单价"></el-table-column>
@@ -55,6 +55,11 @@ export default {
   created: function(){
       this.searchProductSelectList();
     },
+  computed:{
+        indexByPages: function(){
+            return (this.page - 1)*(this.rows) + 1
+        }
+      },
   watch: {
     "dialogVisible": function(newValue,oldValue){
       if(newValue){

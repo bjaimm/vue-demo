@@ -16,7 +16,7 @@
     </el-form>
     
     <el-table :data="ProductInfo" style="width: 100%">
-        <el-table-column type="index" width="50"></el-table-column>
+        <el-table-column type="index" :index="indexByPages" width="50"></el-table-column>
         <el-table-column prop="productName" label="产品名称"></el-table-column>
         <el-table-column prop="productPrice" label="产品价格"></el-table-column>
         <el-table-column prop="productAmount" label="产品数量"></el-table-column>
@@ -60,6 +60,11 @@ export default{
             rows: 2,
             page: 1
         }
+    },
+    computed:{
+      indexByPages: function(){
+          return (this.page - 1)*(this.rows) + 1
+      }
     },
     components: {
       AddProduct,
