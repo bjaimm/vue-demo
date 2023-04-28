@@ -5,7 +5,7 @@
               <el-input v-model="queryProductName" placeholder="产品名称"></el-input>
           </el-form-item>
           <el-form-item>
-              <el-button  size="small" type="primary" @click="setProductSelectList">查询</el-button>
+              <el-button  size="small" type="primary" @click="searchProductSelectList">查询</el-button>
           </el-form-item>
       </el-form>
       <el-table :data="productSelectList" style="width: 100%">
@@ -19,6 +19,11 @@
             </template>
           </el-table-column>
       </el-table>
+      <div class="block">
+          <el-pagination @current-change="handleCurrentChange" @size-change="handleSizeChange" :current-page="page" :page-sizes="[1,2,3,4]" :page-size="rows" layout="total,sizes,prev,next,jumper" :total="total">
+
+          </el-pagination>
+      </div>
   
       <div slot="footer" class="dialog-footer">
           <el-button  size="small" @click="cancel">取消</el-button>
@@ -38,20 +43,23 @@ export default {
         queryProductName: "",
         productSelectList: [],
         selected: false,
-        selectedProductList: []
+        selectedProductList: [],
+        total: 0,
+        rows: 2,
+        page: 1
     }
   },
   props: {
     dialogVisible: Boolean
   },
   created: function(){
-      this.setProductSelectList();
+      this.searchProductSelectList();
     },
   watch: {
     "dialogVisible": function(newValue,oldValue){
       if(newValue){
         this.selectedProductList=[];
-        this.setProductSelectList();
+        this.searchProductSelectList();
       }
     }
   },
@@ -60,7 +68,7 @@ export default {
 
         console.log("opened is triggered")
     },
-    setProductSelectList(){
+    searchProductSelectList(){
         if(localStorage.getItem("microserviceDemoLoginToken")===null){
 
             this.$router.push({
@@ -69,13 +77,27 @@ export default {
         }
         else{
             var loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
+            var queryUrl="/api/products/listpage/"+this.page+"/"+this.rows
+
             axios
-                .get('/api/products',{
+                .get(queryUrl,{
             headers: {
                 'Authorization': loginToken
+            },
+            params: {
+              productName: this.queryProductName
             }
             })
-                .then(response => (this.productSelectList = response.data.data)
+                .then(response => {
+                  if(response.data.data!=null){
+                      this.productSelectList = response.data.data.records
+                      this.total = response.data.data.total
+                    }
+                    else{
+                      this.productSelectList=[]
+                      this.total = 0
+                    }
+                }
             
             )
                 .catch(function (error) { // 请求失败处理
@@ -118,6 +140,17 @@ export default {
             }
 
         }
+    },
+    //每页显示记录数发生变化时，设置当前页码为1，执行查询
+    handleSizeChange: function(sizes){
+            this.rows =sizes;
+            this.page=1;
+            this.searchProductSelectList();
+          },
+    //当前页码发生变化，执行查询
+    handleCurrentChange: function(page){
+      this.page = page;
+      this.searchProductSelectList();
     }
 
   }  

@@ -46,6 +46,7 @@ const store = new Vuex.Store({
             state.orderChart = null;
             state.orderChart = tmp;
 
+
             localStorage.setItem("microserviceDemoOrderChart",JSON.stringify(state.orderChart))
         },
         popupOrderChart: function(state,removedProduct){
@@ -58,6 +59,7 @@ const store = new Vuex.Store({
             var tmp = state.orderChart;
             state.orderChart = null;
             state.orderChart = tmp;
+
 
             localStorage.setItem("microserviceDemoOrderChart",JSON.stringify(state.orderChart))
         },        

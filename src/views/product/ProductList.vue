@@ -10,7 +10,7 @@
             <el-input v-model="queryProductName" placeholder="产品名称"></el-input>
         </el-form-item>
         <el-form-item>
-            <el-button size="small" type="primary" >查询</el-button>
+            <el-button size="small" type="primary" @click="searchProductList">查询</el-button>
             <el-button  size="small" type="primary" @click="showAddProduct">新增</el-button>
         </el-form-item>
     </el-form>
@@ -27,9 +27,14 @@
         </template>
         </el-table-column>
     </el-table>
+    <div class="block">
+        <el-pagination @current-change="handleCurrentChange" @size-change="handleSizeChange" :current-page="page" :page-sizes="[1,2,3,4]" :page-size="rows" layout="total,sizes,prev,next,jumper" :total="total">
 
-    <AddProduct :dialogVisible="addProductDialogVisible" :selectedItem="selectedItem" @save="addProduct" @cancel="cancel"></AddProduct>
-    <EditProduct :dialogVisible="editProductDialogVisible" :selectedItem="selectedItem" @save="editProduct" @cancel="cancel"></EditProduct>
+        </el-pagination>
+    </div>
+
+    <AddProduct :dialogVisible.sync="addProductDialogVisible" :selectedItem="selectedItem" @save="addProduct" @cancel="cancel"></AddProduct>
+    <EditProduct :dialogVisible.sync="editProductDialogVisible" :selectedItem="selectedItem" @save="editProduct" @cancel="cancel"></EditProduct>
 </div>
 </template>
 
@@ -50,7 +55,10 @@ export default{
             addProductDialogVisible: false,
             editProductDialogVisible: false,
             ProductInfo: [],
-            queryProductName: ""
+            queryProductName: "",
+            total: 0,
+            rows: 2,
+            page: 1
         }
     },
     components: {
@@ -58,7 +66,7 @@ export default{
       EditProduct
     },
     created: function(){
-      this.setProductInfo();
+      this.searchProductList();
     },
     watch: {
       
@@ -79,7 +87,7 @@ export default{
               })
               .then((response) => {
           console.log(response.data);
-          this.setProductInfo();
+          this.searchProductList();
         })
               .catch(function (error) { // 请求失败处理
                   console.log(error);
@@ -107,7 +115,7 @@ export default{
               })
               .then((response) => {
           console.log(response.data);
-          this.setProductInfo();
+          this.searchProductList();
         })
               .catch(function (error) { // 请求失败处理
                   console.log(error);
@@ -127,7 +135,7 @@ export default{
               })
               .then((response) => {
           console.log(response.data);
-          this.setProductInfo();
+          this.searchProductList();
         })
               .catch(function (error) { // 请求失败处理
                   console.log(error);
@@ -136,7 +144,7 @@ export default{
         this.selectedItem={};
         this.selectedIndex = -1;
       },
-      setProductInfo(){
+      searchProductList(){
         if(localStorage.getItem("microserviceDemoLoginToken")===null){
 
           this.$router.push({
@@ -145,13 +153,26 @@ export default{
         }
         else{
           loginToken = "Bearer "+localStorage.getItem("microserviceDemoLoginToken")
+          var queryUrl="/api/products/listpage/"+this.page+"/"+this.rows
           axios
-              .get('/api/products',{
+              .get(queryUrl,{
             headers: {
               'Authorization': loginToken
+            },
+            params: {
+              productName: this.queryProductName
             }
             })
-              .then(response => (this.ProductInfo = response.data.data)
+              .then(response => {
+                  if(response.data.data!=null){
+                      this.ProductInfo = response.data.data.records
+                      this.total = response.data.data.total
+                    }
+                    else{
+                      this.ProductInfo=[]
+                      this.total = 0
+                    }
+                }
             
             )
               .catch(function (error) { // 请求失败处理
@@ -163,6 +184,17 @@ export default{
         this.addProductDialogVisible = false;
         this.editProductDialogVisible = false;
         this.selectedItem={};
+      },
+      //每页显示记录数发生变化时，设置当前页码为1，执行查询
+      handleSizeChange: function(sizes){
+              this.rows =sizes;
+              this.page=1;
+              this.searchProductList();
+            },
+      //当前页码发生变化，执行查询
+      handleCurrentChange: function(page){
+        this.page = page;
+        this.searchProductList();
       }
     }
 }

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="待办事项-新增产品" :visible.sync="dialogVisible">
+  <el-dialog title="待办事项-新增产品" :visible="dialogVisible" :before-close="dialogClose">
     <el-form>
         <el-form-item label="产品名称">
             <el-input v-model="selectedItem.productName" autocomplete="off"></el-input>
@@ -31,6 +31,9 @@ export default {
     },
     cancel(){
         this.$emit("cancel");
+    },
+    dialogClose(){
+      this.cancel()
     }
   }  
 }
